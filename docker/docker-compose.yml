@@ -8,6 +8,7 @@ services:
     container_name: "catalog-service"
     ports:
       - 9001:9001
+      - 8001:8001
     environment:
       # Buildpacks environment variable to configure the number of threads in memory calculation
       - BPL_JVM_THREAD_COUNT=50
