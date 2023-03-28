@@ -11,7 +11,7 @@
 -PregistryToken=<your_github_token>
 ```
 
-```bash
+```bash  
 minikube start --cpus 2 --memory 4g --driver docker --profile polar
 ```
 
