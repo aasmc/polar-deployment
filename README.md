@@ -31,3 +31,8 @@ kubectl get all -l app=catalog-service
 kubectl logs deployment/catalog-service
 ```
 
+```bash
+kubeval --strict -d k8s 
+```
+
+
