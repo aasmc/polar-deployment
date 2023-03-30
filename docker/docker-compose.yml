@@ -85,6 +85,16 @@ services:
       timeout: 5s
       retries: 5
 
+  polar-redis:
+    image: "redis:7.0"
+    container_name: "polar-redis"
+    ports:
+      - 6379:6379
+    networks:
+      backend:
+        aliases:
+          - "polar-redis"
+
 networks:
   backend:
     driver: bridge
