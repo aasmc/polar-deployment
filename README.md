@@ -35,4 +35,11 @@ kubectl logs deployment/catalog-service
 kubeval --strict -d k8s 
 ```
 
+```bash
+minikube addons enable ingress --profile polar
+```
+
+```bash
+kubectl get all -n ingress-nginx
+```
 
