@@ -43,3 +43,66 @@ minikube addons enable ingress --profile polar
 kubectl get all -n ingress-nginx
 ```
 
+Run bash in keycloak container
+```bash
+docker exec -it polar-keycloak bash
+```
+
+Navigate to the folder where the Keycloak Admin CLI scripts are located
+```bash
+cd /opt/keycloak/bin
+```
+
+Start an authenticated session before running any other commands
+```bash
+$ ./kcadm.sh config credentials \
+    --server http://localhost:8080 \
+    --realm master \
+    --user user \
+    --password password
+```
+
+Create a new security realm where all the policies associated with Polar Bookshop will be stored
+
+```bash
+./kcadm.sh create realms -s realm=PolarBookshop -s enabled=true
+```
+
+Create two roles in the PolarBookshop realm: employee (can add new books to the catalog, 
+modify existing ones and delete them), customer (can browse books and purchase them)
+
+```bash
+./kcadm.sh create roles -r PolarBookshop -s name=employee
+./kcadm.sh create roles -r PolarBookshop -s name=customer
+```
+
+Create two users for testing purposes
+
+```bash
+./kcadm.sh create users -r PolarBookshop \
+    -s username=isabelle \
+    -s firstName=Isabelle \
+    -s lastName=Dahl \
+    -s enabled=true
+    
+./kcadm.sh add-roles -r PolarBookshop \
+     --uusername isabelle \
+     --rolename employee \
+     --rolename customer
+     
+./kcadm.sh create users -r PolarBookshop \
+    -s username=bjorn \
+    -s firstName=Bjorn \
+    -s lastName=Vinterberg \
+    -s enabled=true
+    
+./kcadm.sh add-roles -r PolarBookshop \
+     --uusername bjorn \
+     --rolename employee 
+
+./kcadm.sh set-password -r PolarBookshop \
+   --username isabelle --new-password password
+
+./kcadm.sh set-password -r PolarBookshop \
+   --username bjorn --new-password password
+```
