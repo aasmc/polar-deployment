@@ -73,6 +73,10 @@ services:
         condition: service_healthy
       config-service:
         condition: service_started
+      polar-keycloak:
+        condition: service_started
+      polar-ui:
+        condition: service_started
     image: "ghcr.io/aasmc/edge-service"
     container_name: "edge-service"
     ports:
@@ -86,6 +90,8 @@ services:
       - ORDER_SERVICE_URL=http://order-service:9002
       - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
       - SPRING_REDIS_HOST=polar-redis
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://host.docker.internal:8080/realms/PolarBookshop
+      - SPA_URL=http://polar-ui:9004
     networks:
       backend:
         aliases:
@@ -156,7 +162,7 @@ services:
   polar-keycloak:
     image: quay.io/keycloak/keycloak:19.0
     container_name: "polar-keycloak"
-    command: start-dev # starts Keycloak in dev mode using an embedded DB
+    command: start-dev --import-realm # starts Keycloak in dev mode using an embedded DB
     volumes:
       - ./keycloak:/opt/keycloak/data/import
     environment:
@@ -168,6 +174,18 @@ services:
       backend:
         aliases:
           - "polar-keycloak"
+
+  polar-ui:
+    image: "ghcr.io/polarbookshop/polar-ui:v1"
+    container_name: "polar-ui"
+    ports:
+      - 9004:9004
+    networks:
+      backend:
+        aliases:
+          - "polar-ui"
+    environment:
+      - PORT=9004
 
 networks:
   backend:
