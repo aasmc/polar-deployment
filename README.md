@@ -106,3 +106,13 @@ Create two users for testing purposes
 ./kcadm.sh set-password -r PolarBookshop \
    --username bjorn --new-password password
 ```
+
+Register Edge Service as an OAuth2 Client in the PolarBookshop realm in Keycloak
+```bash
+./kcadm.sh create clients -r PolarBookshop \
+    -s clientId=edge-service \
+    -s enabled=true \
+    -s publicClient=false \
+    -s secret=polar-keycloak-secret \
+    -s 'redirectUris=["http://localhost:9000","http://localhost:9000/login/oauth2/code/*"]'
+```

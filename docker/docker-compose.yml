@@ -157,6 +157,8 @@ services:
     image: quay.io/keycloak/keycloak:19.0
     container_name: "polar-keycloak"
     command: start-dev # starts Keycloak in dev mode using an embedded DB
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import
     environment:
       - KEYCLOAK_ADMIN=user
       - KEYCLOAK_ADMIN_PASSWORD=password
