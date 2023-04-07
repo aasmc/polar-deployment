@@ -8,7 +8,7 @@ services:
       polar-postgres:
         condition: service_healthy
     image: "ghcr.io/aasmc/catalogservice"
-    container_name: "catalog-service"
+    container_name: "catalog-service"x
     ports:
       - 9001:9001
       - 8001:8001
@@ -90,7 +90,7 @@ services:
       - ORDER_SERVICE_URL=http://order-service:9002
       - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
       - SPRING_REDIS_HOST=polar-redis
-      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://host.docker.internal:8080/realms/PolarBookshop
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://polar-keycloak:8080/realms/PolarBookshop
       - SPA_URL=http://polar-ui:9004
     networks:
       backend:
@@ -186,6 +186,9 @@ services:
           - "polar-ui"
     environment:
       - PORT=9004
+    depends_on:
+      polar-postgres:
+        condition: service_healthy
 
 networks:
   backend:

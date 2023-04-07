@@ -116,3 +116,21 @@ Register Edge Service as an OAuth2 Client in the PolarBookshop realm in Keycloak
     -s secret=polar-keycloak-secret \
     -s 'redirectUris=["http://localhost:9000","http://localhost:9000/login/oauth2/code/*"]'
 ```
+
+To run all the services on a local k8s cluster we need to map polar-keycloak host name
+to the IP address of the cluster:
+
+```bash
+echo "<ip-address> polar-keycloak" | sudo tee -a /etc/hosts 
+```
+
+Get the IP address of the cluster
+```bash
+minikube ip --profile polar
+```
+
+Tunnel traffic on Windows or Mac
+
+```bash
+minikube tunnel --profile polar
+```
