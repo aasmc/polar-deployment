@@ -7,8 +7,8 @@ services:
         condition: service_started
       polar-postgres:
         condition: service_healthy
-    image: "ghcr.io/aasmc/catalogservice"
-    container_name: "catalog-service"x
+    image: "catalog-service"
+    container_name: "catalog-service"
     ports:
       - 9001:9001
       - 8001:8001
@@ -26,7 +26,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://polar-postgres:5432/polardb_catalog
       - SPRING_PROFILES_ACTIVE=testdata
   config-service:
-    image: "ghcr.io/aasmc/config-service"
+    image: "config-service"
     container_name: "config-service"
     ports:
       - 8888:8888
@@ -48,7 +48,7 @@ services:
         condition: service_started
       config-service:
         condition: service_started
-    image: "ghcr.io/aasmc/order-service"
+    image: "order-service"
     container_name: "order-service"
     ports:
       - 9002:9002
@@ -77,7 +77,7 @@ services:
         condition: service_started
       polar-ui:
         condition: service_started
-    image: "ghcr.io/aasmc/edge-service"
+    image: "edge-service"
     container_name: "edge-service"
     ports:
       - 9000:9000
@@ -99,7 +99,7 @@ services:
   dispatcher-service:
     depends_on:
       - polar-rabbitmq
-    image: "ghcr.io/aasmc/dispatcher-service"
+    image: "dispatcher-service"
     container_name: dispatcher-service
     ports:
       - 9003:9003

@@ -29,7 +29,7 @@ spec:
               value: "-Dkeycloak.import=/opt/keycloak/data/import/realm-config.json"
           readinessProbe:
             httpGet:
-              path: polar-keycloak/realms/master
+              path: /realms/master
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 10
