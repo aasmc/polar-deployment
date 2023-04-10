@@ -84,7 +84,7 @@ services:
       driver: fluentd
       options:
         fluentd-address: 127.0.0.1:24224
-
+  
   edge-service:
     depends_on:
       - fluent-bit
@@ -151,7 +151,7 @@ services:
       driver: fluentd
       options:
         fluentd-address: 127.0.0.1:24224
-
+  
   # Backing Services
 
   polar-postgres:
@@ -179,7 +179,7 @@ services:
       - 15672:15672
     volumes:
       - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-
+  
   polar-keycloak:
     image: quay.io/keycloak/keycloak:19.0
     container_name: "polar-keycloak"
@@ -246,6 +246,3 @@ services:
       - "4317:4317"     # OTel
     volumes:
       - ./observability/tempo/tempo.yml:/etc/tempo-config.yml
-
-
-
