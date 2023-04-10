@@ -166,7 +166,7 @@ services:
       - BPL_DEBUG_ENABLED=true
       - BPL_DEBUG_PORT=8003
       - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.17.0.jar
-      - OTEL_SERVICE_NAME=order-service
+      - OTEL_SERVICE_NAME=dispatcher-service
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
       - OTEL_METRICS_EXPORTER=none
       - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
@@ -260,7 +260,7 @@ services:
   # Observability
 
   grafana:
-    image: grafana/grafana:9.3.2
+    image: grafana/grafana:9.1.2
     container_name: grafana
     depends_on:
       - loki
@@ -293,7 +293,7 @@ services:
       - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
 
   loki:
-    image: grafana/loki:2.7.1
+    image: grafana/loki:2.6.1
     container_name: loki
     depends_on:
       - fluent-bit
@@ -305,7 +305,7 @@ services:
           - "loki"
 
   fluent-bit:
-    image: grafana/fluent-bit-plugin-loki:2.7.1-amd64
+    image: grafana/fluent-bit-plugin-loki:2.6.1-amd64
     container_name: fluent-bit
     ports:
       - "24224:24224"
