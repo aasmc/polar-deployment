@@ -118,6 +118,7 @@ services:
   config-service:
     depends_on:
       - fluent-bit
+      - polar-postgres
     image: "config-service"
     container_name: "config-service"
     ports:
@@ -167,6 +168,11 @@ services:
       - POSTGRES_PASSWORD=password
     volumes:
       - ./postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   polar-redis:
     image: "redis:7.0"
