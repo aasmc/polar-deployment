@@ -141,6 +141,9 @@ services:
   polar-ui:
     depends_on:
       - fluent-bit
+      - polar-postgres
+      - catalog-service
+      - order-service
     image: "ghcr.io/polarbookshop/polar-ui:v1"
     container_name: "polar-ui"
     ports:
