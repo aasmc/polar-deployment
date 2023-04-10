@@ -236,6 +236,7 @@ services:
     container_name: grafana
     depends_on:
       - loki
+      - prometheus
     ports:
       - "3000:3000"
     networks:
@@ -249,6 +250,18 @@ services:
       - ./observability/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
       - ./observability/grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./observability/grafana/grafana.ini:/etc/grafana/grafana.ini
+
+  prometheus:
+    image: prom/prometheus:v2.38.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      backend:
+        aliases:
+          - "prometheus"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
 
   loki:
     image: grafana/loki:2.7.1
@@ -275,6 +288,20 @@ services:
       - LOKI_URL=http://loki:3100/loki/api/v1/push
     volumes:
       - ./observability/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+
+  tempo:
+    image: grafana/tempo:1.5.0
+    container_name: tempo
+    command: -config.file /etc/tempo-config.yml
+    ports:
+      - "3110:3100"     # Tempo
+      - "4317:4317"     # OTel
+    volumes:
+      - ./observability/tempo/tempo.yml:/etc/tempo-config.yml
+    networks:
+      backend:
+        aliases:
+          - "tempo"
 
 networks:
   backend:
