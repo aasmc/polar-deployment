@@ -18,7 +18,7 @@ services:
       - BPL_JVM_THREAD_COUNT=50
       - BPL_DEBUG_ENABLED=true
       - BPL_DEBUG_PORT=8001
-      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.19.2.jar
+      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.24.0.jar
       - OTEL_SERVICE_NAME=catalog-service
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
       - OTEL_METRICS_EXPORTER=none
@@ -46,7 +46,7 @@ services:
       # Buildpacks environment variable to enable debug through a socket on port 8002
       - BPL_DEBUG_ENABLED=true
       - BPL_DEBUG_PORT=8002
-      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.19.2.jar
+      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.24.0.jar
       - OTEL_SERVICE_NAME=order-service
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
       - OTEL_METRICS_EXPORTER=none
@@ -74,7 +74,7 @@ services:
       # Buildpacks environment variable to enable debug through a socket on port 8002
       - BPL_DEBUG_ENABLED=true
       - BPL_DEBUG_PORT=8003
-      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.19.2.jar
+      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.24.0.jar
       - OTEL_SERVICE_NAME=dispatcher-service
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
       - OTEL_METRICS_EXPORTER=none
@@ -84,7 +84,7 @@ services:
       driver: fluentd
       options:
         fluentd-address: 127.0.0.1:24224
-  
+
   edge-service:
     depends_on:
       - fluent-bit
@@ -100,7 +100,7 @@ services:
       # Buildpacks environment variable to enable debug through a socket on port 8000
       - BPL_DEBUG_ENABLED=true
       - BPL_DEBUG_PORT=8000
-      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.19.2.jar
+      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.24.0.jar
       - OTEL_SERVICE_NAME=edge-service
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
       - OTEL_METRICS_EXPORTER=none
@@ -108,8 +108,8 @@ services:
       - ORDER_SERVICE_URL=http://order-service:9002
       - SPA_URL=http://polar-ui:9004
       - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
-      - SPRING_REDIS_HOST=polar-redis
-      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://polar-keycloak:8080/realms/PolarBookshop
+      - SPRING_DATA_REDIS_HOST=polar-redis
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://host.docker.internal:8080/realms/PolarBookshop
     logging:
       driver: fluentd
       options:
@@ -118,7 +118,6 @@ services:
   config-service:
     depends_on:
       - fluent-bit
-      - polar-postgres
     image: "config-service"
     container_name: "config-service"
     ports:
@@ -130,7 +129,7 @@ services:
       # Buildpacks environment variable to enable debug through a socket on port 9888
       - BPL_DEBUG_ENABLED=true
       - BPL_DEBUG_PORT=9888
-      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.19.2.jar
+      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.24.0.jar
       - OTEL_SERVICE_NAME=config-service
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
       - OTEL_METRICS_EXPORTER=none
@@ -142,9 +141,6 @@ services:
   polar-ui:
     depends_on:
       - fluent-bit
-      - polar-postgres
-      - catalog-service
-      - order-service
     image: "ghcr.io/polarbookshop/polar-ui:v1"
     container_name: "polar-ui"
     ports:
@@ -155,11 +151,11 @@ services:
       driver: fluentd
       options:
         fluentd-address: 127.0.0.1:24224
-  
+
   # Backing Services
 
   polar-postgres:
-    image: "postgres:15.1"
+    image: "postgres:15.2"
     container_name: "polar-postgres"
     ports:
       - 5432:5432
@@ -168,11 +164,6 @@ services:
       - POSTGRES_PASSWORD=password
     volumes:
       - ./postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   polar-redis:
     image: "redis:7.0"
