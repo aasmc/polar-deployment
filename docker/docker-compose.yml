@@ -25,11 +25,15 @@ services:
       - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
       - SPRING_DATASOURCE_URL=jdbc:postgresql://polar-postgres:5432/polardb_catalog
       - SPRING_PROFILES_ACTIVE=testdata
-      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://host.docker.internal:8080/realms/PolarBookshop
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://polar-keycloak:8080/realms/PolarBookshop
     logging:
       driver: fluentd
       options:
         fluentd-address: 127.0.0.1:24224
+    networks:
+      backend:
+        aliases:
+          - "catalog-service"
 
   order-service:
     depends_on:
@@ -55,11 +59,15 @@ services:
       - SPRING_R2DBC_URL=r2dbc:postgresql://polar-postgres:5432/polardb_order
       - SPRING_FLYWAY_URL=jdbc:postgresql://polar-postgres:5432/polardb_order
       - SPRING_RABBITMQ_HOST=polar-rabbitmq
-      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://host.docker.internal:8080/realms/PolarBookshop
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://polar-keycloak:8080/realms/PolarBookshop
     logging:
       driver: fluentd
       options:
         fluentd-address: 127.0.0.1:24224
+    networks:
+      backend:
+        aliases:
+          - "order-service"
 
   dispatcher-service:
     depends_on:
@@ -84,6 +92,10 @@ services:
       driver: fluentd
       options:
         fluentd-address: 127.0.0.1:24224
+    networks:
+      backend:
+        aliases:
+          - "dispatcher-service"
 
   edge-service:
     depends_on:
@@ -109,11 +121,15 @@ services:
       - SPA_URL=http://polar-ui:9004
       - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
       - SPRING_DATA_REDIS_HOST=polar-redis
-      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://host.docker.internal:8080/realms/PolarBookshop
+      - SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI=http://polar-keycloak:8080/realms/PolarBookshop
     logging:
       driver: fluentd
       options:
         fluentd-address: 127.0.0.1:24224
+    networks:
+      backend:
+        aliases:
+          - "edge-service"
 
   config-service:
     depends_on:
@@ -137,6 +153,10 @@ services:
       driver: fluentd
       options:
         fluentd-address: 127.0.0.1:24224
+    networks:
+      backend:
+        aliases:
+          - "config-service"
 
   polar-ui:
     depends_on:
@@ -151,6 +171,10 @@ services:
       driver: fluentd
       options:
         fluentd-address: 127.0.0.1:24224
+    networks:
+      backend:
+        aliases:
+          - "polar-ui"
 
   # Backing Services
 
@@ -164,12 +188,25 @@ services:
       - POSTGRES_PASSWORD=password
     volumes:
       - ./postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      backend:
+        aliases:
+          - "polar-postgres"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   polar-redis:
     image: "redis:7.0"
     container_name: "polar-redis"
     ports:
       - 6379:6379
+    networks:
+      backend:
+        aliases:
+          - "polar-redis"
 
   polar-rabbitmq:
     image: rabbitmq:3.11-management
@@ -179,6 +216,10 @@ services:
       - 15672:15672
     volumes:
       - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    networks:
+      backend:
+        aliases:
+          - "polar-rabbitmq"
   
   polar-keycloak:
     image: quay.io/keycloak/keycloak:19.0
@@ -191,6 +232,10 @@ services:
       - KEYCLOAK_ADMIN_PASSWORD=password
     ports:
       - 8080:8080
+    networks:
+      backend:
+        aliases:
+          - "polar-keycloak"
 
   # Observability
 
@@ -210,6 +255,10 @@ services:
       - ./observability/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
       - ./observability/grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./observability/grafana/grafana.ini:/etc/grafana/grafana.ini
+    networks:
+      backend:
+        aliases:
+          - "grafana"
 
   loki:
     image: grafana/loki:2.7.1
@@ -218,6 +267,10 @@ services:
       - fluent-bit
     ports:
       - "3100:3100"
+    networks:
+      backend:
+        aliases:
+          - "loki"
 
   fluent-bit:
     image: grafana/fluent-bit-plugin-loki:2.7.1-amd64
@@ -228,6 +281,10 @@ services:
       - LOKI_URL=http://loki:3100/loki/api/v1/push
     volumes:
       - ./observability/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+    networks:
+      backend:
+        aliases:
+          - "fluent-bit"
 
   prometheus:
     image: prom/prometheus:v2.40.7
@@ -236,6 +293,10 @@ services:
       - "9090:9090"
     volumes:
       - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      backend:
+        aliases:
+          - "prometheus"
 
   tempo:
     image: grafana/tempo:1.5.0
@@ -246,3 +307,11 @@ services:
       - "4317:4317"     # OTel
     volumes:
       - ./observability/tempo/tempo.yml:/etc/tempo-config.yml
+    networks:
+      backend:
+        aliases:
+          - "tempo"
+
+networks:
+  backend:
+    driver: bridge
