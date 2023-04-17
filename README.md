@@ -134,3 +134,9 @@ Tunnel traffic on Windows or Mac
 ```bash
 minikube tunnel --profile polar
 ```
+
+Use Kustomize CLI change the image to be used in the cluster. 
+This command will automatically update the kustomization.yml file with the new configuration.
+```bash
+kustomize edit set image catalog-service=ghcr.io/aasmc/catalog-service:latest
+```
