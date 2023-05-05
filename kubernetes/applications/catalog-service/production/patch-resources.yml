@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-service
+spec:
+  template:
+    spec:
+      containers:
+        - name: catalog-service
+          resources:
+            requests:
+              memory: 756Mi # 756 MiB
+              cpu: "0.1" # CPU cycles equivalent to 0.1 CPU
+            limits:
+              memory: 756Mi
+              cpu: "2" # the container can consume CPU cycles equivalent to 2 CPUs at most.

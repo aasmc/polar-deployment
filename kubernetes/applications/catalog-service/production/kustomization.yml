@@ -6,6 +6,7 @@ resources:
 patchesStrategicMerge:
   - patch-env.yml
   - patch-volumes.yml
+  - patch-resources.yml
 
 configMapGenerator:
   - behavior: merge
