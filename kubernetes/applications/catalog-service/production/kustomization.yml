@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - github.com/aasmc/catalog-service/k8s?ref=a8873c0601ce42391fa4127b88e7ab45b0375116
+
+patchesStrategicMerge:
+  - patch-env.yml
+  - patch-volumes.yml
+
+configMapGenerator:
+  - behavior: merge
+    files:
+      - application-prod.yml
+    name: catalog-config
+
+images:
+  - name: catalog-service
+    newName: ghcr.io/aasmc/catalog-service
+    newTag: a8873c0601ce42391fa4127b88e7ab45b0375116
+
+replicas:
+  - name: catalog-service
+    count: 2

@@ -1,0 +1,7 @@
+polar:
+  greeting: Welcome to our book catalog from a production Kubernetes environment!
+spring:
+  config:
+    # Imports configuration from the path where volumes with Secrets are mounted.
+    # Make sure you include the final slash, or the import will fail.
+    import: configtree:/workspace/secrets/*/
