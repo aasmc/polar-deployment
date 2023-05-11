@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -euo pipefail
+set -eu pipefail
 
 echo "\n📦 Installing Knative CRDs..."
 
